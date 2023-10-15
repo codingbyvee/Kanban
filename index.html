@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #45042e;
+        }
+        
+        .kanban-board {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .column {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            width: 30%;
+            margin: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            transition: background-color 0.3s;
+        }
+        
+        .column:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .item {
+            background: linear-gradient(45deg, #f5f5f5, #e5e5e5);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            transition: background 0.3s;
+        }
+        
+        .item:hover {
+            background: linear-gradient(45deg, #e5e5e5, #d5d5d5);
+        }
+        
+        .item-text {
+            flex: 1;
+        }
+        
+        .delete-button {
+            background-color: #ff5c5c;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .delete-button:hover {
+            background-color: #ff3333;
+        }
+        
+        .add-button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .add-button:hover {
+            background-color: #45a848;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Kanban Board</h1>
+    <div class="kanban-board">
+        <div class="column" id="todo">
+            <h2>To Do</h2>
+        </div>
+        <div class="column" id="inprogress">
+            <h2>In Progress</h2>
+        </div>
+        <div class="column" id="done">
+            <h2>Done</h2>
+        </div>
+    </div>
+    <div>
+        <input type="text" id="taskInput" placeholder="New task">
+        <button class="add-button" onclick="addTask()">Add Task</button>
+    </div>
+
+    <script>
+        function addTask() {
+            const taskInput = document.getElementById("taskInput");
+            const taskText = taskInput.value.trim();
+            if (taskText === "") return;
+
+            const taskItem = createTaskElement(taskText);
+            document.getElementById("todo").appendChild(taskItem);
+
+            taskInput.value = "";
+        }
+
+        function createTaskElement(text) {
+            const taskItem = document.createElement("div");
+            taskItem.className = "item";
+
+            const taskText = document.createElement("div");
+            taskText.className = "item-text";
+            taskText.textContent = text;
+
+            const deleteButton = document.createElement("button");
+            deleteButton.className = "delete-button";
+            deleteButton.textContent = "Delete";
+            deleteButton.addEventListener("click", () => {
+                taskItem.remove();
+            });
+
+            taskItem.appendChild(taskText);
+            taskItem.appendChild(deleteButton);
+            taskItem.draggable = true;
+
+            taskItem.addEventListener("dragstart", (e) => {
+                e.dataTransfer.setData("text/plain", text);
+            });
+
+            return taskItem;
+        }
+
+        const columns = document.querySelectorAll(".column");
+
+        columns.forEach((column) => {
+            column.addEventListener("dragover", (e) => {
+                e.preventDefault();
+            });
+
+            column.addEventListener("drop", (e) => {
+                e.preventDefault();
+                const text = e.dataTransfer.getData("text/plain");
+                const taskItem = createTaskElement(text);
+                column.appendChild(taskItem);
+            });
+        });
+    </script>
+</body>
+</html>
